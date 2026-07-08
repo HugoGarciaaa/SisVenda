@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "vdEMN7Tqip0=",
+  "success": false,
+  "projectFilePath": "C:\\Users\\Hugo_\\OneDrive\\Área de Trabalho\\DESGRAÇA\\SisVenda\\SisVenda\\SisVenda.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1012",
+      "level": "Error",
+      "message": "A versão da plataforma não está presente para uma ou mais estruturas de destino, embora elas tenham uma plataforma especificada: net10.0-android",
+      "projectPath": "C:\\Users\\Hugo_\\OneDrive\\Área de Trabalho\\DESGRAÇA\\SisVenda\\SisVenda\\SisVenda.csproj",
+      "filePath": "C:\\Users\\Hugo_\\OneDrive\\Área de Trabalho\\DESGRAÇA\\SisVenda\\SisVenda\\SisVenda.csproj",
+      "targetGraphs": []
+    }
+  ]
+}
