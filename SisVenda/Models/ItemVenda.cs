@@ -18,5 +18,9 @@ namespace Sisvenda.Models
         public decimal Valor { get; set; }
 
         public decimal ValorTotal { get; set; }
+
+        // Propriedade não mapeada para banco de dados
+        [Ignore]
+        public Produto Produto { get; set; }
     }
 }

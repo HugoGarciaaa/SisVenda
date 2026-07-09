@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#F0F7FF" stroke="#2563EB" stroke-width="2"/>
+
+  <!-- Main Logo Symbol -->
+  <g>
+    <!-- Bar Chart Bars -->
+    <!-- Bar 1 -->
+    <rect x="40" y="110" width="20" height="50" fill="#2563EB" rx="3"/>
+
+    <!-- Bar 2 -->
+    <rect x="70" y="90" width="20" height="70" fill="#3B82F6" rx="3"/>
+
+    <!-- Bar 3 -->
+    <rect x="100" y="70" width="20" height="90" fill="#60A5FA" rx="3"/>
+
+    <!-- Bar 4 -->
+    <rect x="130" y="85" width="20" height="75" fill="#3B82F6" rx="3"/>
+
+    <!-- Upward Arrow -->
+    <line x1="155" y1="110" x2="165" y2="50" stroke="#22C55E" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="165,50 160,60 170,60" fill="#22C55E"/>
+  </g>
+
+  <!-- Text -->
+  <text x="100" y="160" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        text-anchor="middle" fill="#2563EB">SisVenda</text>
+</svg>

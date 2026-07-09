@@ -1,5 +1,5 @@
+using Sisvenda.Database;
 using Sisvenda.Models;
-using Sisvenda.ViewModels;
 using System.Collections.ObjectModel;
 
 namespace Sisvenda.Views
@@ -9,15 +9,27 @@ namespace Sisvenda.Views
         private Venda _venda;
         private List<Produto> _produtos;
         private List<Cliente> _clientes;
-        private ObservableCollection<ItemVenda> _itens;
+        private DatabaseService _databaseService;
+        private decimal _desconto;
 
-        public ObservableCollection<ItemVenda> Itens
+        public ObservableCollection<ItemVenda> Itens { get; private set; }
+
+        public Produto ProdutoSelecionado
         {
-            get => _itens;
-            set => _itens = value;
+            get => _venda?.Itens?.LastOrDefault()?.Produto;
+            set
+            {
+                if (value != null)
+                {
+                    OnPropertyChanged();
+                }
+            }
         }
 
-        public decimal ValorTotal => _venda?.ValorTotal ?? 0m;
+        public decimal ValorTotal
+        {
+            get => (_venda?.Itens?.Sum(i => i.ValorTotal) ?? 0m) - _desconto;
+        }
 
         public DateTime CurrentDate
         {
@@ -36,7 +48,10 @@ namespace Sisvenda.Views
         public VendaDetailPage()
         {
             InitializeComponent();
-            _itens = new ObservableCollection<ItemVenda>();
+            _databaseService = new DatabaseService();
+            _desconto = 0m;
+
+            Itens = new ObservableCollection<ItemVenda>();
             _venda = new Venda
             {
                 Data = DateTime.Now,
@@ -53,18 +68,36 @@ namespace Sisvenda.Views
 
         private async void LoadClientesAsync()
         {
-            var db = new Database.DatabaseService();
-            _clientes = await db.GetClientesAsync();
-            ClientePicker.ItemsSource = _clientes;
-            ClientePicker.ItemDisplayBinding = new Binding("Nome");
+            try
+            {
+                _clientes = await _databaseService.GetClientesAsync();
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    ClientePicker.ItemsSource = _clientes;
+                    ClientePicker.ItemDisplayBinding = new Binding("Nome");
+                });
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erro", $"Erro ao carregar clientes: {ex.Message}", "OK");
+            }
         }
 
         private async void LoadProdutosAsync()
         {
-            var db = new Database.DatabaseService();
-            _produtos = await db.GetProdutosAsync();
-            ProdutoPicker.ItemsSource = _produtos;
-            ProdutoPicker.ItemDisplayBinding = new Binding("Nome");
+            try
+            {
+                _produtos = await _databaseService.GetProdutosAsync();
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    ProdutoPicker.ItemsSource = _produtos;
+                    ProdutoPicker.ItemDisplayBinding = new Binding("Nome");
+                });
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erro", $"Erro ao carregar produtos: {ex.Message}", "OK");
+            }
         }
 
         private void OnClienteSelectedChanged(object sender, EventArgs e)
@@ -78,40 +111,68 @@ namespace Sisvenda.Views
 
         private void OnProdutoSelectedChanged(object sender, EventArgs e)
         {
-            // nothing for now
+            if (ProdutoPicker.SelectedItem is Produto produto)
+            {
+                ProdutoSelecionado = produto;
+                OnPropertyChanged(nameof(ProdutoSelecionado));
+            }
         }
 
         private async void OnAdicionarItemClicked(object sender, EventArgs e)
         {
+            if (ProdutoPicker.SelectedItem == null)
+            {
+                await DisplayAlert("Validação", "Selecione um produto", "OK");
+                return;
+            }
+
+            if (!decimal.TryParse(QuantidadeEntry.Text, out var quantidade) || quantidade <= 0)
+            {
+                await DisplayAlert("Validação", "Informe uma quantidade válida", "OK");
+                return;
+            }
+
             if (ProdutoPicker.SelectedItem is Produto produto)
             {
-                if (!decimal.TryParse(QuantidadeEntry.Text, out var quantidade) || quantidade <= 0)
-                {
-                    await DisplayAlert("ValidaÃ§Ã£o", "Informe uma quantidade vÃ¡lida", "OK");
-                    return;
-                }
-
                 var item = new ItemVenda
                 {
                     IdProduto = produto.Id,
                     Quantidade = quantidade,
                     Valor = produto.Preco,
-                    ValorTotal = quantidade * produto.Preco
+                    ValorTotal = quantidade * produto.Preco,
+                    Produto = produto
                 };
 
-                _venda.Itens.Add(item);
-                _itens.Add(item);
+                // Verificar se produto já existe no carrinho
+                var itemExistente = _venda.Itens.FirstOrDefault(i => i.IdProduto == produto.Id);
+                if (itemExistente != null)
+                {
+                    itemExistente.Quantidade += quantidade;
+                    itemExistente.ValorTotal = itemExistente.Quantidade * itemExistente.Valor;
+
+                    var index = Itens.IndexOf(itemExistente);
+                    Itens[index] = itemExistente;
+                }
+                else
+                {
+                    _venda.Itens.Add(item);
+                    Itens.Add(item);
+                }
 
                 // Limpar campos
-                QuantidadeEntry.Text = "";
+                QuantidadeEntry.Text = "1";
                 ProdutoPicker.SelectedItem = null;
 
                 RecalcularTotais();
             }
-            else
-            {
-                await DisplayAlert("ValidaÃ§Ã£o", "Selecione um produto", "OK");
-            }
+        }
+
+        private void OnLimparSelecaoClicked(object sender, EventArgs e)
+        {
+            QuantidadeEntry.Text = "1";
+            ProdutoPicker.SelectedItem = null;
+            ProdutoSelecionado = null;
+            OnPropertyChanged(nameof(ProdutoSelecionado));
         }
 
         private async void OnRemoverItemClicked(object sender, EventArgs e)
@@ -119,15 +180,71 @@ namespace Sisvenda.Views
             if (sender is Button btn && btn.CommandParameter is ItemVenda item)
             {
                 _venda.Itens.Remove(item);
-                _itens.Remove(item);
+                Itens.Remove(item);
                 RecalcularTotais();
             }
         }
 
+        private async void OnAumentarQuantidadeClicked(object sender, EventArgs e)
+        {
+            if (sender is Button btn && btn.CommandParameter is ItemVenda item)
+            {
+                item.Quantidade += 1;
+                item.ValorTotal = item.Quantidade * item.Valor;
+
+                var index = Itens.IndexOf(item);
+                Itens[index] = item;
+
+                RecalcularTotais();
+            }
+        }
+
+        private async void OnDiminuirQuantidadeClicked(object sender, EventArgs e)
+        {
+            if (sender is Button btn && btn.CommandParameter is ItemVenda item)
+            {
+                if (item.Quantidade > 1)
+                {
+                    item.Quantidade -= 1;
+                    item.ValorTotal = item.Quantidade * item.Valor;
+
+                    var index = Itens.IndexOf(item);
+                    Itens[index] = item;
+
+                    RecalcularTotais();
+                }
+                else
+                {
+                    await DisplayAlert("Aviso", "A quantidade mínima é 1. Use 'Remover' para excluir o item.", "OK");
+                }
+            }
+        }
+
+        private void OnDescontoChanged(object sender, TextChangedEventArgs e)
+        {
+            if (decimal.TryParse(e.NewTextValue, out var desconto))
+            {
+                _desconto = desconto;
+            }
+            else
+            {
+                _desconto = 0m;
+            }
+
+            RecalcularTotais();
+        }
+
         private void RecalcularTotais()
         {
-            _venda.ValorTotal = _venda.Itens.Sum(i => i.ValorTotal);
-            // Notificar UI sobre mudanÃ§a de ValorTotal
+            if (_venda.Itens.Any())
+            {
+                _venda.ValorTotal = (_venda.Itens.Sum(i => i.ValorTotal)) - _desconto;
+            }
+            else
+            {
+                _venda.ValorTotal = -_desconto;
+            }
+
             OnPropertyChanged(nameof(ValorTotal));
         }
 
@@ -135,27 +252,28 @@ namespace Sisvenda.Views
         {
             if (_venda.IdCliente <= 0)
             {
-                await DisplayAlert("ValidaÃ§Ã£o", "Selecione um cliente", "OK");
+                await DisplayAlert("Validação", "Selecione um cliente", "OK");
                 return;
             }
 
             if (_venda.Itens == null || !_venda.Itens.Any())
             {
-                await DisplayAlert("ValidaÃ§Ã£o", "Adicione pelo menos um produto Ã  venda", "OK");
+                await DisplayAlert("Validação", "Adicione pelo menos um produto à venda", "OK");
                 return;
             }
 
             try
             {
-                var db = new Database.DatabaseService();
+                _venda.ValorTotal = (_venda.Itens.Sum(i => i.ValorTotal)) - _desconto;
+
                 // Salva venda
-                await db.AddVendaAsync(_venda);
+                var vendaId = await _databaseService.AddVendaAsync(_venda);
 
                 // Salva itens com IdVenda preenchido
                 foreach (var item in _venda.Itens)
                 {
-                    item.IdVenda = _venda.Id;
-                    await db.AddItemVendaAsync(item);
+                    item.IdVenda = (int)vendaId;
+                    await _databaseService.AddItemVendaAsync(item);
                 }
 
                 await DisplayAlert("Sucesso", "Venda salva com sucesso!", "OK");
@@ -169,7 +287,11 @@ namespace Sisvenda.Views
 
         private async void OnCancelClicked(object sender, EventArgs e)
         {
-            await Navigation.PopAsync();
+            bool confirm = await DisplayAlert("Confirmar", "Descartar venda e voltar?", "Sim", "Não");
+            if (confirm)
+            {
+                await Navigation.PopAsync();
+            }
         }
     }
 }

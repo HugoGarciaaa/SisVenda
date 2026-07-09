@@ -2,93 +2,107 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Sisvenda.Views.ProdutoDetailPage"
-             Title="{Binding TituloPagina}">
+             Title="Detalhes do Produto"
+             BackgroundColor="#1a1a1a">
 
-    <Grid RowDefinitions="*,auto" Padding="20" BackgroundColor="White">
-        <!-- Formulário -->
-        <ScrollView Grid.Row="0">
-            <StackLayout Spacing="15">
-                <!-- Título -->
-                <Label Text="Dados do Produto" 
-                       FontSize="18" 
-                       FontAttributes="Bold"
-                       TextColor="#333"/>
+    <Grid RowDefinitions="*,auto" Padding="0">
+        <ScrollView Grid.Row="0" BackgroundColor="#1a1a1a">
+            <VerticalStackLayout Padding="20" Spacing="20">
 
-                <!-- Código -->
-                <StackLayout Spacing="5">
-                    <Label Text="Código:" FontAttributes="Bold" TextColor="#333"/>
-                    <Entry x:Name="CodigoEntry"
-                           Placeholder="Digite o código"
-                           Text="{Binding Produto.Codigo}"
-                           PlaceholderColor="Gray"/>
-                </StackLayout>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Imagem do Produto:" FontSize="14" FontAttributes="Bold" TextColor="White"/>
+                    <Frame Padding="10" CornerRadius="10" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
+                        <Image Source="{Binding Produto.ImagemUrl, FallbackValue='https://via.placeholder.com/300'}" 
+                              Aspect="AspectFit"
+                              HeightRequest="300"
+                              BackgroundColor="#0a0a0a"/>
+                    </Frame>
+                </VerticalStackLayout>
 
-                <!-- Nome -->
-                <StackLayout Spacing="5">
-                    <Label Text="Nome:" FontAttributes="Bold" TextColor="#333"/>
-                    <Entry x:Name="NomeEntry"
-                           Placeholder="Digite o nome"
-                           Text="{Binding Produto.Nome}"
-                           PlaceholderColor="Gray"/>
-                </StackLayout>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="URL da Imagem:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
+                        <Entry Placeholder="https://exemplo.com/imagem.jpg"
+                              Text="{Binding Produto.ImagemUrl}"
+                              PlaceholderColor="#606060"
+                              TextColor="White"
+                              BackgroundColor="#2a2a2a"/>
+                    </Frame>
+                </VerticalStackLayout>
 
-                <!-- Descrição -->
-                <StackLayout Spacing="5">
-                    <Label Text="Descrição:" FontAttributes="Bold" TextColor="#333"/>
-                    <Editor x:Name="DescricaoEditor"
-                            Placeholder="Digite a descrição"
-                            Text="{Binding Produto.Descricao}"
-                            HeightRequest="100"
-                            PlaceholderColor="Gray"/>
-                </StackLayout>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Nome:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
+                        <Entry Placeholder="Digite o nome do produto"
+                              Text="{Binding Produto.Nome}"
+                              PlaceholderColor="#606060"
+                              TextColor="White"
+                              BackgroundColor="#2a2a2a"/>
+                    </Frame>
+                </VerticalStackLayout>
 
-                <!-- Preço de Venda -->
-                <StackLayout Spacing="5">
-                    <Label Text="Preço de Venda (R$):" FontAttributes="Bold" TextColor="#333"/>
-                    <Entry x:Name="PrecoEntry"
-                           Placeholder="0,00"
-                           Text="{Binding Produto.Preco}"
-                           Keyboard="Numeric"
-                           PlaceholderColor="Gray"/>
-                </StackLayout>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Codigo:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
+                        <Entry Placeholder="Digite o codigo do produto"
+                              Text="{Binding Produto.Codigo}"
+                              PlaceholderColor="#606060"
+                              TextColor="White"
+                              BackgroundColor="#2a2a2a"/>
+                    </Frame>
+                </VerticalStackLayout>
 
-                <!-- Preço de Custo -->
-                <StackLayout Spacing="5">
-                    <Label Text="Preço de Custo (R$):" FontAttributes="Bold" TextColor="#333"/>
-                    <Entry x:Name="PrecoCustoEntry"
-                           Placeholder="0,00"
-                           Text="{Binding Produto.PrecoCusto}"
-                           Keyboard="Numeric"
-                           PlaceholderColor="Gray"/>
-                </StackLayout>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Descricao:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Editor Placeholder="Digite a descricao do produto"
+                           Text="{Binding Produto.Descricao}"
+                           PlaceholderColor="#606060"
+                           TextColor="White"
+                           BackgroundColor="#2a2a2a"
+                           HeightRequest="100"/>
+                </VerticalStackLayout>
 
-                <!-- Margem de Lucro (somente leitura) -->
-                <StackLayout Spacing="5">
-                    <Label Text="Margem de Lucro:" FontAttributes="Bold" TextColor="#333"/>
-                    <Label Text="{Binding MargemLucro, StringFormat='{0:F2}%'}"
-                           FontSize="14"
-                           TextColor="#007AFF"
-                           FontAttributes="Bold"/>
-                </StackLayout>
-            </StackLayout>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Preco:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
+                        <Entry Placeholder="0.00"
+                              Text="{Binding Produto.Preco}"
+                              Keyboard="Numeric"
+                              PlaceholderColor="#606060"
+                              TextColor="White"
+                              BackgroundColor="#2a2a2a"/>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Categoria:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
+                        <Entry Placeholder="Digite a categoria do produto"
+                              Text="{Binding Produto.Categoria}"
+                              PlaceholderColor="#606060"
+                              TextColor="White"
+                              BackgroundColor="#2a2a2a"/>
+                    </Frame>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Botões de Ação -->
-        <Grid Grid.Row="1" 
-              ColumnDefinitions="*,*" 
-              ColumnSpacing="10">
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" Padding="10" ColumnSpacing="10" BackgroundColor="#2a2a2a">
             <Button Grid.Column="0"
                    Text="Cancelar"
                    Clicked="OnCancelarClicked"
                    BackgroundColor="#FF3B30"
                    TextColor="White"
-                   CornerRadius="5"/>
+                   CornerRadius="8"
+                   Padding="15"/>
+
             <Button Grid.Column="1"
                    Text="Salvar"
                    Clicked="OnSalvarClicked"
                    BackgroundColor="#34C759"
                    TextColor="White"
-                   CornerRadius="5"/>
+                   CornerRadius="8"
+                   Padding="15"/>
         </Grid>
     </Grid>
 </ContentPage>

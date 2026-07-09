@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Shell x:Class="Sisvenda.AppShell" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:Sisvenda" xmlns:views="clr-namespace:Sisvenda.Views" Title="Sisvenda">
-    <TabBar>
-        <ShellContent Title="Início" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage"/>
-        <ShellContent Title="Produtos" ContentTemplate="{DataTemplate views:ProdutoListPage}" Route="produtos"/>
-        <ShellContent Title="Clientes" ContentTemplate="{DataTemplate views:ClienteListPage}" Route="clientes"/>
-        <ShellContent Title="Vendas" ContentTemplate="{DataTemplate views:VendaListPage}" Route="vendas"/>
-    </TabBar>
+<Shell x:Class="Sisvenda.AppShell" 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:local="clr-namespace:Sisvenda" 
+    xmlns:views="clr-namespace:Sisvenda.Views" 
+    Title="Sisvenda"
+    FlyoutBehavior="Flyout"
+    FlyoutBackgroundColor="#1a1a1a"
+    FlyoutWidth="280">
+
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="#2a2a2a" Padding="20" RowDefinitions="auto,auto" RowSpacing="10">
+            <Label 
+                Grid.Row="0"
+                Text="SisVenda" 
+                FontSize="24" 
+                FontAttributes="Bold"
+                TextColor="#34C759"
+                VerticalOptions="Center"/>
+            <Label 
+                Grid.Row="1"
+                Text="Sistema de Vendas" 
+                FontSize="12"
+                TextColor="#A0A0A0"
+                VerticalOptions="Center"/>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Menu" FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent 
+            Title="🏠 Início" 
+            ContentTemplate="{DataTemplate local:MainPage}" 
+            Route="MainPage"/>
+        <ShellContent 
+            Title="📦 Produtos" 
+            ContentTemplate="{DataTemplate views:ProdutoListPage}" 
+            Route="produtos"/>
+        <ShellContent 
+            Title="👥 Clientes" 
+            ContentTemplate="{DataTemplate views:ClienteListPage}" 
+            Route="clientes"/>
+        <ShellContent 
+            Title="🛒 Vendas" 
+            ContentTemplate="{DataTemplate views:VendaListPage}" 
+            Route="vendas"/>
+    </FlyoutItem>
+
     <ShellContent Route="produtoDetail" ContentTemplate="{DataTemplate views:ProdutoDetailPage}"/>
     <ShellContent Route="clienteDetail" ContentTemplate="{DataTemplate views:ClienteDetailPage}"/>
     <ShellContent Route="vendaDetail" ContentTemplate="{DataTemplate views:VendaDetailPage}"/>

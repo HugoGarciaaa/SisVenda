@@ -97,6 +97,17 @@ namespace Sisvenda.Database
         }
 
         /// <summary>
+        /// Obtém um produto pelo código (exato)
+        /// </summary>
+        public async Task<Produto> GetProdutoByCodigoAsync(string codigo)
+        {
+            await InitializeAsync();
+            return await _db.Table<Produto>()
+                .Where(p => p.Codigo == codigo)
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
         /// Busca produtos por nome
         /// </summary>
         public async Task<List<Produto>> SearchProdutosByNome(string nome)

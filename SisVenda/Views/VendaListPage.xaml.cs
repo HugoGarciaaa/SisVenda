@@ -1,5 +1,7 @@
 using Sisvenda.Models;
 using Sisvenda.ViewModels;
+using Sisvenda.Services;
+using Sisvenda.Database;
 
 namespace Sisvenda.Views
 {
@@ -24,6 +26,33 @@ namespace Sisvenda.Views
         {
             var page = new VendaDetailPage();
             await Navigation.PushAsync(page);
+        }
+
+        private async void OnImportFromApiClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var button = sender as Button;
+                button.IsEnabled = false;
+                button.Text = "Importando...";
+
+                var apiService = new FakeStoreApiService();
+                var dbService = new DatabaseService();
+                var importedCount = await apiService.ImportProductsAsync(dbService);
+
+                await DisplayAlert("Sucesso", $"{importedCount} produtos importados da API!\n\nAgora você pode usar estes produtos ao criar vendas.", "OK");
+
+                button.Text = "Import API";
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erro", $"Erro ao importar: {ex.Message}", "OK");
+            }
+            finally
+            {
+                var button = sender as Button;
+                button.IsEnabled = true;
+            }
         }
 
         private async void OnEditVendaClicked(object sender, EventArgs e)

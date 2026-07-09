@@ -21,5 +21,11 @@ namespace Sisvenda.Models
         public decimal Preco { get; set; }
 
         public decimal PrecoCusto { get; set; }
+
+        [MaxLength(1000)]
+        public string ImagemUrl { get; set; }
+
+        [MaxLength(100)]
+        public string Categoria { get; set; }
     }
 }

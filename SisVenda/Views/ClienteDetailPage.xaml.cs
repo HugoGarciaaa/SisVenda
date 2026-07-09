@@ -1,14 +1,27 @@
 using Sisvenda.Models;
-using Sisvenda.ViewModels;
+using Sisvenda.Database;
 
 namespace Sisvenda.Views
 {
     [QueryProperty(nameof(ClienteId), "clienteId")]
     public partial class ClienteDetailPage : ContentPage
     {
-        private readonly ClienteViewModel _viewModel;
         private int _clienteId = -1;
         private Cliente _cliente;
+        private DatabaseService _dbService = new DatabaseService();
+
+        public Cliente Cliente
+        {
+            get => _cliente;
+            set
+            {
+                if (_cliente != value)
+                {
+                    _cliente = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public int ClienteId
         {
@@ -23,8 +36,8 @@ namespace Sisvenda.Views
         public ClienteDetailPage()
         {
             InitializeComponent();
-            _viewModel = new ClienteViewModel();
-            BindingContext = _viewModel;
+            _cliente = new Cliente();
+            BindingContext = this;
         }
 
         private async void LoadClienteDetails(int clienteId)
@@ -32,19 +45,15 @@ namespace Sisvenda.Views
             if (clienteId <= 0)
             {
                 Title = "Novo Cliente";
+                _cliente = new Cliente();
                 return;
             }
 
             try
             {
-                var dbService = new Database.DatabaseService();
-                _cliente = await dbService.GetClienteAsync(clienteId);
-
-                if (_cliente != null)
-                {
-                    Title = "Editar Cliente";
-                    PopulateFields(_cliente);
-                }
+                _cliente = await _dbService.GetClienteAsync(clienteId);
+                Title = "Editar Cliente";
+                OnPropertyChanged(nameof(Cliente));
             }
             catch (Exception ex)
             {
@@ -52,61 +61,23 @@ namespace Sisvenda.Views
             }
         }
 
-        private void PopulateFields(Cliente cliente)
+        private async void OnSaveClicked(object sender, EventArgs e)
         {
-            CpfCnpjEntry.Text = cliente.CpfCnpj;
-            NomeEntry.Text = cliente.Nome;
-            EnderecoEntry.Text = cliente.Endereco;
-            NumeroEntry.Text = cliente.Numero;
-            ComplementoEntry.Text = cliente.Complemento;
-            TelefoneEntry.Text = cliente.Telefone;
-            BairroEntry.Text = cliente.Bairro;
-            CidadeEntry.Text = cliente.Cidade;
-            CepEntry.Text = cliente.Cep;
-        }
-
-        private async void OnSaveClienteClicked(object sender, EventArgs e)
-        {
-            if (!ValidateFields())
+            if (_cliente == null || string.IsNullOrWhiteSpace(_cliente.Nome))
             {
-                await DisplayAlert("Validação", "Preencha todos os campos obrigatórios", "OK");
+                await DisplayAlert("Validacao", "Preencha o nome do cliente", "OK");
                 return;
             }
 
             try
             {
-                if (_cliente == null)
+                if (_cliente.Id <= 0)
                 {
-                    // Novo cliente
-                    _cliente = new Cliente
-                    {
-                        CpfCnpj = CpfCnpjEntry.Text,
-                        Nome = NomeEntry.Text,
-                        Endereco = EnderecoEntry.Text,
-                        Numero = NumeroEntry.Text,
-                        Complemento = ComplementoEntry.Text,
-                        Telefone = TelefoneEntry.Text,
-                        Bairro = BairroEntry.Text,
-                        Cidade = CidadeEntry.Text,
-                        Cep = CepEntry.Text
-                    };
-
-                    await _viewModel.AddClienteAsync(_cliente);
+                    await _dbService.AddClienteAsync(_cliente);
                 }
                 else
                 {
-                    // Atualizando cliente existente
-                    _cliente.CpfCnpj = CpfCnpjEntry.Text;
-                    _cliente.Nome = NomeEntry.Text;
-                    _cliente.Endereco = EnderecoEntry.Text;
-                    _cliente.Numero = NumeroEntry.Text;
-                    _cliente.Complemento = ComplementoEntry.Text;
-                    _cliente.Telefone = TelefoneEntry.Text;
-                    _cliente.Bairro = BairroEntry.Text;
-                    _cliente.Cidade = CidadeEntry.Text;
-                    _cliente.Cep = CepEntry.Text;
-
-                    await _viewModel.UpdateClienteAsync(_cliente);
+                    await _dbService.UpdateClienteAsync(_cliente);
                 }
 
                 await Shell.Current.GoToAsync("///clientes", true);
@@ -120,18 +91,6 @@ namespace Sisvenda.Views
         private async void OnCancelClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("///clientes", true);
-        }
-
-        private bool ValidateFields()
-        {
-            return !string.IsNullOrWhiteSpace(CpfCnpjEntry.Text) &&
-                   !string.IsNullOrWhiteSpace(NomeEntry.Text) &&
-                   !string.IsNullOrWhiteSpace(EnderecoEntry.Text) &&
-                   !string.IsNullOrWhiteSpace(NumeroEntry.Text) &&
-                   !string.IsNullOrWhiteSpace(TelefoneEntry.Text) &&
-                   !string.IsNullOrWhiteSpace(BairroEntry.Text) &&
-                   !string.IsNullOrWhiteSpace(CidadeEntry.Text) &&
-                   !string.IsNullOrWhiteSpace(CepEntry.Text);
         }
     }
 }

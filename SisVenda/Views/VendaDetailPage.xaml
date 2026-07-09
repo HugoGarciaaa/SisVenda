@@ -1,115 +1,265 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Sisvenda.Views.VendaDetailPage"
-             Title="Detalhes da Venda">
+             Title="Nova Venda"
+             BackgroundColor="#f5f5f5">
 
-    <Grid RowDefinitions="auto,auto,*,auto" Padding="10">
+    <Grid RowDefinitions="auto,*,auto" Padding="0">
+        <!-- Cabecalho com Data e Cliente -->
+        <Frame Grid.Row="0" Padding="15" CornerRadius="0" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="White" Margin="0">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="auto,auto" ColumnSpacing="15" RowSpacing="10">
+                <VerticalStackLayout Grid.Column="0" Spacing="5">
+                    <Label Text="Data da Venda:" FontSize="12" FontAttributes="Bold" TextColor="#333"/>
+                    <DatePicker x:Name="DataPicker" 
+                               Date="{Binding CurrentDate, Mode=TwoWay}"
+                               Format="dd/MM/yyyy"
+                               TextColor="#333"
+                               BackgroundColor="#f9f9f9"/>
+                </VerticalStackLayout>
 
-        <!-- Data da Venda -->
-        <VerticalStackLayout Grid.Row="0" Padding="10" Spacing="5">
-            <Label Text="Data da Venda:" FontSize="14" FontAttributes="Bold"/>
-            <DatePicker x:Name="DataPicker" 
-                       Date="{Binding CurrentDate, Mode=TwoWay}"
-                       Format="dd/MM/yyyy"/>
-        </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Spacing="5">
+                    <Label Text="Cliente:" FontSize="12" FontAttributes="Bold" TextColor="#333"/>
+                    <Picker x:Name="ClientePicker" 
+                           Title="Selecione um cliente"
+                           SelectedItem="{Binding ClienteSelecionado, Mode=TwoWay}"
+                           SelectedIndexChanged="OnClienteSelectedChanged"
+                           TextColor="#333"
+                           BackgroundColor="#f9f9f9"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Frame>
 
-        <!-- Seleção de Cliente -->
-        <VerticalStackLayout Grid.Row="1" Padding="10" Spacing="5">
-            <Label Text="Cliente:" FontSize="14" FontAttributes="Bold"/>
-            <Picker x:Name="ClientePicker" 
-                   Title="Selecione um cliente"
-                   SelectedItem="{Binding ClienteSelecionado, Mode=TwoWay}"
-                   SelectedIndexChanged="OnClienteSelectedChanged"/>
-        </VerticalStackLayout>
+        <!-- Conteudo Principal -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,350" ColumnSpacing="0">
+            <!-- Selecao e Preview do Produto (Lado Esquerdo) -->
+            <VerticalStackLayout Grid.Column="0" Padding="15" Spacing="15">
+                <!-- Frame de Selecao de Produto -->
+                <Frame Padding="15" CornerRadius="8" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="White">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Adicionar Produto" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                        <Picker x:Name="ProdutoPicker"
+                               Title="Selecione um produto"
+                               SelectedIndexChanged="OnProdutoSelectedChanged"
+                               TextColor="#333"
+                               BackgroundColor="#f9f9f9"/>
+                        <Grid ColumnDefinitions="*,80,80" ColumnSpacing="10">
+                            <Entry x:Name="QuantidadeEntry"
+                                  Placeholder="Quantidade"
+                                  Keyboard="Numeric"
+                                  Text="1"
+                                  TextColor="#333"
+                                  PlaceholderColor="#999"
+                                  BackgroundColor="#f9f9f9"/>
+                            <Button Grid.Column="1"
+                                   Text="Adicionar"
+                                   Clicked="OnAdicionarItemClicked"
+                                   BackgroundColor="#007AFF"
+                                   TextColor="White"
+                                   CornerRadius="6"
+                                   Padding="10,5"
+                                   FontSize="12"/>
+                            <Button Grid.Column="2"
+                                   Text="Limpar"
+                                   Clicked="OnLimparSelecaoClicked"
+                                   BackgroundColor="#999"
+                                   TextColor="White"
+                                   CornerRadius="6"
+                                   Padding="10,5"
+                                   FontSize="12"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
 
-        <!-- Produtos e Itens de Venda -->
-        <VerticalStackLayout Grid.Row="2" Padding="10" Spacing="10">
-            <Label Text="Itens da Venda:" FontSize="14" FontAttributes="Bold"/>
-
-            <!-- Adicionar novo item -->
-            <StackLayout Orientation="Horizontal" Spacing="5">
-                <Picker x:Name="ProdutoPicker"
-                       Title="Selecione um produto"
-                       HorizontalOptions="FillAndExpand"
-                       SelectedIndexChanged="OnProdutoSelectedChanged"/>
-                <Entry x:Name="QuantidadeEntry"
-                      Placeholder="Qtd"
-                      Keyboard="Numeric"
-                      WidthRequest="60"/>
-                <Button Text="Adicionar"
-                       Clicked="OnAdicionarItemClicked"
-                       WidthRequest="100"
-                       BackgroundColor="#007AFF"
-                       TextColor="White"
-                       Padding="5"/>
-            </StackLayout>
-
-            <!-- Lista de itens adicionados -->
-            <CollectionView ItemsSource="{Binding Itens}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout Padding="5" Margin="5" Spacing="0">
-                            <Frame Padding="8" CornerRadius="8" BorderColor="#E0E0E0" HasShadow="False" BackgroundColor="#F9F9F9">
-                                <Grid ColumnDefinitions="*,auto" RowDefinitions="auto,auto,auto" Padding="5">
-                                    <Label Grid.Column="0" Grid.Row="0" 
-                                          Text="{Binding Produto.Nome, StringFormat='Produto: {0}'}" 
-                                          FontSize="12" FontAttributes="Bold"/>
-                                    <Label Grid.Column="0" Grid.Row="1" 
-                                          Text="{Binding Quantidade, StringFormat='Quantidade: {0}'}" 
-                                          FontSize="11" TextColor="Gray"/>
-                                    <Label Grid.Column="0" Grid.Row="2" 
-                                          Text="{Binding ValorTotal, StringFormat='Subtotal: {0:C}'}" 
-                                          FontSize="11" FontAttributes="Bold" TextColor="#34C759"/>
-
-                                    <Button Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
-                                           Text="✕"
-                                           FontSize="16"
-                                           Clicked="OnRemoverItemClicked"
-                                           CornerRadius="20"
-                                           WidthRequest="35"
-                                           HeightRequest="35"
-                                           BackgroundColor="#FF3B30"
-                                           TextColor="White"
-                                           CommandParameter="{Binding .}"/>
-                                </Grid>
+                <!-- Preview do Produto Selecionado -->
+                <Frame Padding="15" CornerRadius="8" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="White">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Detalhes do Produto" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
+                        <Grid RowDefinitions="200,*" RowSpacing="10">
+                            <!-- Imagem do Produto -->
+                            <Frame Grid.Row="0" Padding="0" CornerRadius="6" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="#f0f0f0">
+                                <Image Source="{Binding ProdutoSelecionado.ImagemUrl, FallbackValue='https://via.placeholder.com/200x200?text=Sem+Imagem'}" 
+                                      Aspect="AspectFill"
+                                      BackgroundColor="#f0f0f0"/>
                             </Frame>
-                        </StackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
 
-        <!-- Total e Botões de Ação -->
-        <Grid Grid.Row="3" ColumnDefinitions="*,*" RowDefinitions="auto,auto" Padding="10" ColumnSpacing="10" BackgroundColor="#F0F0F0">
-            <Label Grid.Column="0" Grid.Row="0" 
-                  Text="Valor Total:" 
-                  FontSize="14" 
-                  FontAttributes="Bold"
-                  VerticalOptions="Center"/>
-            <Label Grid.Column="1" Grid.Row="0" 
-                  Text="{Binding ValorTotal, StringFormat='R$ {0:F2}'}" 
-                  FontSize="18" 
-                  FontAttributes="Bold"
-                  TextColor="#34C759"
-                  HorizontalTextAlignment="End"
-                  VerticalOptions="Center"/>
+                            <!-- Detalhes -->
+                            <VerticalStackLayout Grid.Row="1" Spacing="8">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="Nome:" FontSize="11" FontAttributes="Bold" TextColor="#666"/>
+                                    <Label Text="{Binding ProdutoSelecionado.Nome, FallbackValue='Selecione um produto'}" 
+                                          FontSize="13" TextColor="#333" LineBreakMode="TailTruncation"/>
+                                </VerticalStackLayout>
 
-            <Button Grid.Column="0" Grid.Row="1"
-                   Text="Cancelar"
-                   Clicked="OnCancelClicked"
-                   BackgroundColor="#FF3B30"
-                   TextColor="White"
-                   CornerRadius="8"
-                   Padding="10"/>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="Codigo:" FontSize="11" FontAttributes="Bold" TextColor="#666"/>
+                                    <Label Text="{Binding ProdutoSelecionado.Codigo, FallbackValue='-'}" 
+                                          FontSize="12" TextColor="#333"/>
+                                </VerticalStackLayout>
 
-            <Button Grid.Column="1" Grid.Row="1"
-                   Text="Salvar"
-                   Clicked="OnSaveVendaClicked"
-                   BackgroundColor="#34C759"
-                   TextColor="White"
-                   CornerRadius="8"
-                   Padding="10"/>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="Categoria:" FontSize="11" FontAttributes="Bold" TextColor="#666"/>
+                                    <Label Text="{Binding ProdutoSelecionado.Categoria, FallbackValue='-'}" 
+                                          FontSize="12" TextColor="#333"/>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="Preco Unitario:" FontSize="11" FontAttributes="Bold" TextColor="#666"/>
+                                    <Label Text="{Binding ProdutoSelecionado.Preco, StringFormat='R$ {0:F2}', FallbackValue='R$ 0,00'}" 
+                                          FontSize="14" FontAttributes="Bold" TextColor="#007AFF"/>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="Descricao:" FontSize="11" FontAttributes="Bold" TextColor="#666"/>
+                                    <Label Text="{Binding ProdutoSelecionado.Descricao, FallbackValue='-'}" 
+                                          FontSize="11" TextColor="#666" LineBreakMode="TailTruncation"/>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+
+            <!-- Painel do Carrinho (Lado Direito) -->
+            <Frame Grid.Column="1" Padding="0" CornerRadius="0" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="White" Margin="1,0,0,0">
+                <Grid RowDefinitions="auto,*,auto">
+                    <!-- Cabecalho do Carrinho -->
+                    <VerticalStackLayout Grid.Row="0" Spacing="5" Padding="15,15,15,10">
+                        <Label Text="Carrinho de Compras" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
+                        <Label Text="{Binding Itens.Count, StringFormat='Total de itens: {0}'}" 
+                              FontSize="12" TextColor="#666"/>
+                    </VerticalStackLayout>
+
+                    <!-- Lista de Itens -->
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding Itens}" SelectionMode="Single">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <VerticalStackLayout Padding="15,10" Spacing="5">
+                                    <Frame Padding="10" CornerRadius="6" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="#f9f9f9">
+                                        <Grid RowDefinitions="80,auto,auto,auto,auto,auto,auto" RowSpacing="5">
+                                            <!-- Imagem do Item -->
+                                            <Frame Grid.Row="0" Padding="0" CornerRadius="4" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="#f0f0f0">
+                                                <Image Source="{Binding Produto.ImagemUrl, FallbackValue='https://via.placeholder.com/100'}" 
+                                                      Aspect="AspectFill"
+                                                      BackgroundColor="#f0f0f0"/>
+                                            </Frame>
+
+                                            <!-- Nome e Codigo -->
+                                            <Label Grid.Row="1"
+                                                  Text="{Binding Produto.Nome}" 
+                                                  FontSize="12" FontAttributes="Bold"
+                                                  TextColor="#333"
+                                                  LineBreakMode="TailTruncation"/>
+                                            <Label Grid.Row="2"
+                                                  Text="{Binding Produto.Codigo, StringFormat='Codigo: {0}'}" 
+                                                  FontSize="10" TextColor="#666"/>
+
+                                            <!-- Preco e Quantidade -->
+                                            <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="5">
+                                                <Label Grid.Column="0"
+                                                      Text="{Binding Valor, StringFormat='R$ {0:F2}'}" 
+                                                      FontSize="11" FontAttributes="Bold" TextColor="#007AFF"/>
+                                                <Label Grid.Column="1"
+                                                      Text="{Binding Quantidade, StringFormat='Qtd: {0}'}" 
+                                                      FontSize="11" TextColor="#333"/>
+                                            </Grid>
+
+                                            <!-- Subtotal -->
+                                            <Grid Grid.Row="4" ColumnDefinitions="*,auto" ColumnSpacing="5">
+                                                <Label Grid.Column="0"
+                                                      Text="Subtotal:" 
+                                                      FontSize="11" FontAttributes="Bold" TextColor="#333"/>
+                                                <Label Grid.Column="1"
+                                                      Text="{Binding ValorTotal, StringFormat='R$ {0:F2}'}" 
+                                                      FontSize="11" FontAttributes="Bold" TextColor="#34C759"/>
+                                            </Grid>
+
+                                            <!-- Botoes de Controle -->
+                                            <Grid Grid.Row="5" ColumnDefinitions="*,*,*" ColumnSpacing="3">
+                                                <Button Grid.Column="0"
+                                                       Text="-"
+                                                       FontSize="12"
+                                                       Clicked="OnDiminuirQuantidadeClicked"
+                                                       BackgroundColor="#FF9500"
+                                                       TextColor="White"
+                                                       CornerRadius="4"
+                                                       Padding="5"
+                                                       CommandParameter="{Binding .}"/>
+                                                <Label Grid.Column="1" 
+                                                      Text="{Binding Quantidade}"
+                                                      HorizontalTextAlignment="Center"
+                                                      VerticalTextAlignment="Center"
+                                                      TextColor="#333"/>
+                                                <Button Grid.Column="2"
+                                                       Text="+"
+                                                       FontSize="12"
+                                                       Clicked="OnAumentarQuantidadeClicked"
+                                                       BackgroundColor="#34C759"
+                                                       TextColor="White"
+                                                       CornerRadius="4"
+                                                       Padding="5"
+                                                       CommandParameter="{Binding .}"/>
+                                            </Grid>
+
+                                            <!-- Botao Remover -->
+                                            <Button Grid.Row="6"
+                                                   Text="Remover"
+                                                   FontSize="10"
+                                                   Clicked="OnRemoverItemClicked"
+                                                   BackgroundColor="#FF3B30"
+                                                   TextColor="White"
+                                                   CornerRadius="4"
+                                                   Padding="5,3"
+                                                   CommandParameter="{Binding .}"/>
+                                        </Grid>
+                                    </Frame>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                                <!-- Rodape com Totais -->
+                                <VerticalStackLayout Grid.Row="2" Spacing="10" Padding="15,10,15,15">
+                    <BoxView Color="#e0e0e0" HeightRequest="1"/>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                <Label Text="Desconto:" FontSize="11" TextColor="#666"/>
+                                <Entry x:Name="DescontoEntry"
+                                      Text="0"
+                                      Keyboard="Numeric"
+                                      TextChanged="OnDescontoChanged"
+                                      TextColor="#333"
+                                      PlaceholderColor="#999"
+                                      BackgroundColor="#f9f9f9"
+                                      FontSize="12"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                <Label Text="Total:" FontSize="11" TextColor="#666"/>
+                                <Label Text="{Binding ValorTotal, StringFormat='R$ {0:F2}'}" 
+                                      FontSize="16" FontAttributes="Bold" TextColor="#34C759"/>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Padding="0,10,0,0">
+                            <Button Grid.Column="0"
+                                   Text="Cancelar"
+                                   Clicked="OnCancelClicked"
+                                   BackgroundColor="#999"
+                                   TextColor="White"
+                                   CornerRadius="6"
+                                   Padding="10"/>
+                            <Button Grid.Column="1"
+                                   Text="Confirmar"
+                                   Clicked="OnSaveVendaClicked"
+                                   BackgroundColor="#34C759"
+                                   TextColor="White"
+                                   CornerRadius="6"
+                                   Padding="10"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
         </Grid>
     </Grid>
 </ContentPage>

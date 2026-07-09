@@ -1,5 +1,7 @@
 using Sisvenda.Models;
 using Sisvenda.ViewModels;
+using Sisvenda.Services;
+using Sisvenda.Database;
 
 namespace Sisvenda.Views
 {
@@ -24,6 +26,34 @@ namespace Sisvenda.Views
         {
             var page = new ProdutoDetailPage();
             await Navigation.PushAsync(page);
+        }
+
+        private async void OnImportFromApiClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var button = sender as Button;
+                button.IsEnabled = false;
+                button.Text = "Importando...";
+
+                var apiService = new FakeStoreApiService();
+                var dbService = new DatabaseService();
+                var importedCount = await apiService.ImportProductsAsync(dbService);
+
+                await DisplayAlert("Sucesso", $"{importedCount} produtos importados da API!", "OK");
+                await _viewModel.LoadProdutosAsync();
+
+                button.Text = "Import API";
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erro", $"Erro ao importar: {ex.Message}", "OK");
+            }
+            finally
+            {
+                var button = sender as Button;
+                button.IsEnabled = true;
+            }
         }
 
         private async void OnEditProdutoClicked(object sender, EventArgs e)
@@ -56,6 +86,27 @@ namespace Sisvenda.Views
             foreach (var produto in produtos)
             {
                 _viewModel.Produtos.Add(produto);
+            }
+        }
+
+        private async void OnOptionClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is Produto produto)
+            {
+                var action = await DisplayActionSheet("Opcoes", "Cancelar", null, "Editar", "Deletar");
+
+                if (action == "Editar")
+                {
+                    await Shell.Current.GoToAsync($"produtodetail?produtoId={produto.Id}");
+                }
+                else if (action == "Deletar")
+                {
+                    var confirm = await DisplayAlert("Confirmacao", "Deseja deletar este produto?", "Sim", "Nao");
+                    if (confirm)
+                    {
+                        await _viewModel.DeleteProdutoAsync(produto);
+                    }
+                }
             }
         }
     }

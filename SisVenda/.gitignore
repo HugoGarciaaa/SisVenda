@@ -1,0 +1,36 @@
+# Build results
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+*.sln
+.DS_Store
+
+# MAUI
+.mvn/
+.m2/
+target/
+
+# IDE
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
