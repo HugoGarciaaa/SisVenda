@@ -71,13 +71,16 @@ namespace Sisvenda.Services
         /// </summary>
         public Produto MapApiProductToProduto(FakeStoreApiProduct apiProduct)
         {
+            // Calcula o custo como 70% do preço (margem de lucro de 30%)
+            decimal precoCusto = apiProduct.Price * 0.70m;
+
             return new Produto
             {
                 Codigo = apiProduct.Id.ToString(),
                 Nome = apiProduct.Title,
                 Descricao = apiProduct.Description,
                 Preco = apiProduct.Price,
-                PrecoCusto = 0m,
+                PrecoCusto = Math.Round(precoCusto, 2),
                 ImagemUrl = apiProduct.Image,
                 Categoria = apiProduct.Category
             };

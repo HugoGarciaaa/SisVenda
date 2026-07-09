@@ -1,5 +1,7 @@
 using Sisvenda.Database;
+using Sisvenda.Database;
 using Sisvenda.Models;
+using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
 
 namespace Sisvenda.Views
@@ -14,11 +16,17 @@ namespace Sisvenda.Views
         private decimal _desconto;
         private Produto _produtoSelecionado;
         private int _vendaId = -1;
+        private bool _isLoaded = false;
 
         public int VendaId
         {
             get => _vendaId;
-            set => _vendaId = value;
+            set
+            {
+                _vendaId = value;
+                // Não carrega aqui, pois os controles podem não estar prontos
+                // O carregamento acontecerá em OnAppearing()
+            }
         }
 
         public ObservableCollection<ItemVenda> Itens { get; private set; }
@@ -31,7 +39,7 @@ namespace Sisvenda.Views
                 if (_produtoSelecionado != value)
                 {
                     _produtoSelecionado = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(ProdutoSelecionado));
                 }
             }
         }
@@ -49,11 +57,24 @@ namespace Sisvenda.Views
                 if (_venda != null)
                 {
                     _venda.Data = value;
+                    OnPropertyChanged(nameof(CurrentDate));
                 }
             }
         }
 
-        public Cliente ClienteSelecionado { get; set; }
+        private Cliente _clienteSelecionado;
+        public Cliente ClienteSelecionado 
+        { 
+            get => _clienteSelecionado;
+            set
+            {
+                if (_clienteSelecionado != value)
+                {
+                    _clienteSelecionado = value;
+                    OnPropertyChanged(nameof(ClienteSelecionado));
+                }
+            }
+        }
 
         public VendaDetailPage()
         {
@@ -70,13 +91,29 @@ namespace Sisvenda.Views
             };
 
             BindingContext = this;
-
-            // Inicializar pickers
-            LoadClientesAsync();
-            LoadProdutosAsync();
         }
 
-        private async void LoadClientesAsync()
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+            if (_isLoaded)
+                return;
+
+            _isLoaded = true;
+
+            // Carregar dados quando a página aparecer
+            await LoadClientesAsync();
+            await LoadProdutosAsync();
+
+            // Se for editar uma venda, carregar seus dados
+            if (_vendaId > 0)
+            {
+                await LoadVendaAsync();
+            }
+        }
+
+        private async Task LoadClientesAsync()
         {
             try
             {
@@ -89,11 +126,89 @@ namespace Sisvenda.Views
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Erro", $"Erro ao carregar clientes: {ex.Message}", "OK");
+                MainThread.BeginInvokeOnMainThread(() =>
+                    DisplayAlert("Erro", $"Erro ao carregar clientes: {ex.Message}", "OK")
+                );
             }
         }
 
-        private async void LoadProdutosAsync()
+        private async Task LoadVendaAsync()
+        {
+            try
+            {
+                var venda = await _databaseService.GetVendaAsync(_vendaId);
+                if (venda != null)
+                {
+                    _venda = venda;
+                    var itens = await _databaseService.GetItensPorVendaAsync(_vendaId);
+
+                    // Carregar produtos para os itens
+                    var itensComProdutos = new List<ItemVenda>();
+                    foreach (var item in itens)
+                    {
+                        var produto = await _databaseService.GetProdutoAsync(item.IdProduto);
+                        item.Produto = produto;
+                        itensComProdutos.Add(item);
+                    }
+
+                    var cliente = await _databaseService.GetClienteAsync(_venda.IdCliente);
+
+                    // Agora fazer todos os updates na thread principal
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        try
+                        {
+                            Itens.Clear();
+                            _venda.Itens.Clear();
+
+                            // Adicionar itens
+                            foreach (var item in itensComProdutos)
+                            {
+                                Itens.Add(item);
+                                _venda.Itens.Add(item);
+                            }
+
+                            // Carregar cliente
+                            if (cliente != null)
+                            {
+                                ClienteSelecionado = cliente;
+                                if (ClientePicker != null)
+                                {
+                                    ClientePicker.SelectedItem = cliente;
+                                }
+                            }
+
+                            // Carregar desconto (inicialmente 0)
+                            _desconto = 0m;
+                            Title = $"Editar Venda #{_venda.Id}";
+
+                            if (DescontoEntry != null)
+                            {
+                                DescontoEntry.Text = "0";
+                            }
+
+                            // Notificar todas as propriedades que mudaram
+                            OnPropertyChanged(nameof(CurrentDate));
+                            OnPropertyChanged(nameof(ValorTotal));
+                            OnPropertyChanged(nameof(Itens));
+                            OnPropertyChanged(nameof(ClienteSelecionado));
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayAlert("Erro UI", $"Erro ao atualizar UI: {ex.Message}", "OK");
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                    DisplayAlert("Erro", $"Erro ao carregar venda: {ex.Message}", "OK")
+                );
+            }
+        }
+
+        private async Task LoadProdutosAsync()
         {
             try
             {
@@ -106,7 +221,9 @@ namespace Sisvenda.Views
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Erro", $"Erro ao carregar produtos: {ex.Message}", "OK");
+                MainThread.BeginInvokeOnMainThread(() =>
+                    DisplayAlert("Erro", $"Erro ao carregar produtos: {ex.Message}", "OK")
+                );
             }
         }
 
@@ -274,18 +391,26 @@ namespace Sisvenda.Views
             {
                 _venda.ValorTotal = (_venda.Itens.Sum(i => i.ValorTotal)) - _desconto;
 
-                // Salva venda
-                var vendaId = await _databaseService.AddVendaAsync(_venda);
-
-                // Salva itens com IdVenda preenchido
-                foreach (var item in _venda.Itens)
+                if (_vendaId > 0)
                 {
-                    item.IdVenda = (int)vendaId;
-                    await _databaseService.AddItemVendaAsync(item);
+                    // Atualizar venda existente
+                    await _databaseService.UpdateVendaAsync(_venda);
+                }
+                else
+                {
+                    // Salvar nova venda
+                    var vendaId = await _databaseService.AddVendaAsync(_venda);
+
+                    // Salva itens com IdVenda preenchido
+                    foreach (var item in _venda.Itens)
+                    {
+                        item.IdVenda = (int)vendaId;
+                        await _databaseService.AddItemVendaAsync(item);
+                    }
                 }
 
                 await DisplayAlert("Sucesso", "Venda salva com sucesso!", "OK");
-                await Navigation.PopAsync();
+                await Shell.Current.GoToAsync("///vendas");
             }
             catch (Exception ex)
             {
@@ -298,7 +423,7 @@ namespace Sisvenda.Views
             bool confirm = await DisplayAlert("Confirmar", "Descartar venda e voltar?", "Sim", "Não");
             if (confirm)
             {
-                await Navigation.PopAsync();
+                await Shell.Current.GoToAsync("///vendas");
             }
         }
     }

@@ -9,6 +9,7 @@
         <ScrollView Grid.Row="0" BackgroundColor="#1a1a1a">
             <VerticalStackLayout Padding="20" Spacing="20">
 
+                <!-- Imagem do Produto -->
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Imagem do Produto:" FontSize="14" FontAttributes="Bold" TextColor="White"/>
                     <Frame Padding="10" CornerRadius="10" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
@@ -19,6 +20,56 @@
                     </Frame>
                 </VerticalStackLayout>
 
+                <!-- Código -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Código:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
+                        <Entry Placeholder="Digite o código do produto"
+                              Text="{Binding Produto.Codigo}"
+                              PlaceholderColor="#606060"
+                              TextColor="White"
+                              BackgroundColor="#2a2a2a"/>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Descrição -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Descrição:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Editor Placeholder="Digite a descrição do produto"
+                           Text="{Binding Produto.Descricao}"
+                           PlaceholderColor="#606060"
+                           TextColor="White"
+                           BackgroundColor="#2a2a2a"
+                           HeightRequest="100"/>
+                </VerticalStackLayout>
+
+                <!-- Valor (Preço) -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Valor:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
+                        <Entry Placeholder="0.00"
+                              Text="{Binding Produto.Preco}"
+                              Keyboard="Numeric"
+                              PlaceholderColor="#606060"
+                              TextColor="White"
+                              BackgroundColor="#2a2a2a"/>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Custo -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Custo:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
+                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
+                        <Entry Placeholder="0.00"
+                              Text="{Binding Produto.PrecoCusto}"
+                              Keyboard="Numeric"
+                              PlaceholderColor="#606060"
+                              TextColor="White"
+                              BackgroundColor="#2a2a2a"/>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- URL da Imagem (campo opcional para edição) -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="URL da Imagem:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
                     <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
@@ -30,6 +81,7 @@
                     </Frame>
                 </VerticalStackLayout>
 
+                <!-- Nome -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Nome:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
                     <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
@@ -41,39 +93,7 @@
                     </Frame>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Codigo:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
-                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
-                        <Entry Placeholder="Digite o codigo do produto"
-                              Text="{Binding Produto.Codigo}"
-                              PlaceholderColor="#606060"
-                              TextColor="White"
-                              BackgroundColor="#2a2a2a"/>
-                    </Frame>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Descricao:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
-                    <Editor Placeholder="Digite a descricao do produto"
-                           Text="{Binding Produto.Descricao}"
-                           PlaceholderColor="#606060"
-                           TextColor="White"
-                           BackgroundColor="#2a2a2a"
-                           HeightRequest="100"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Preco:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
-                    <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">
-                        <Entry Placeholder="0.00"
-                              Text="{Binding Produto.Preco}"
-                              Keyboard="Numeric"
-                              PlaceholderColor="#606060"
-                              TextColor="White"
-                              BackgroundColor="#2a2a2a"/>
-                    </Frame>
-                </VerticalStackLayout>
-
+                <!-- Categoria -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Categoria:" FontSize="12" FontAttributes="Bold" TextColor="#A0A0A0"/>
                     <Frame Padding="0" CornerRadius="8" BorderColor="#404040" HasShadow="False" BackgroundColor="#2a2a2a">

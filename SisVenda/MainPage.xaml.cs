@@ -13,17 +13,17 @@ namespace Sisvenda
 
         private async void OnProdutosClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("produtos");
+            await Shell.Current.GoToAsync("///produtos");
         }
 
         private async void OnClientesClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("clientes");
+            await Shell.Current.GoToAsync("///clientes");
         }
 
         private async void OnVendasClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("vendas");
+            await Shell.Current.GoToAsync("///vendas");
         }
     }
 }

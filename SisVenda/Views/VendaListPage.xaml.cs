@@ -24,8 +24,7 @@ namespace Sisvenda.Views
 
         private async void OnAddVendaClicked(object sender, EventArgs e)
         {
-            var page = new VendaDetailPage();
-            await Navigation.PushAsync(page);
+            await Shell.Current.GoToAsync("///vendadetail");
         }
 
         private async void OnImportFromApiClicked(object sender, EventArgs e)
@@ -59,8 +58,7 @@ namespace Sisvenda.Views
         {
             if (sender is Button button && button.CommandParameter is Venda venda)
             {
-                var page = new VendaDetailPage { BindingContext = venda };
-                await Navigation.PushAsync(page);
+                await Shell.Current.GoToAsync($"///vendadetail?id={venda.Id}");
             }
         }
 
@@ -97,7 +95,7 @@ namespace Sisvenda.Views
 
                 if (action == "Ver")
                 {
-                    await Shell.Current.GoToAsync($"vendadetail?id={venda.Id}");
+                    await Shell.Current.GoToAsync($"///vendadetail?id={venda.Id}");
                 }
                 else if (action == "Deletar")
                 {

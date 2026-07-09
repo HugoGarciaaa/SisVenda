@@ -32,7 +32,7 @@ namespace Sisvenda.Views
         {
             if (sender is Button btn && btn.CommandParameter is Cliente cliente)
             {
-                await Shell.Current.GoToAsync($"clientedetail?clienteId={cliente.Id}");
+                await Shell.Current.GoToAsync($"///clientedetail?clienteId={cliente.Id}");
             }
         }
 
@@ -52,7 +52,7 @@ namespace Sisvenda.Views
 
                 if (action == "Editar")
                 {
-                    await Shell.Current.GoToAsync($"clientedetail?clienteId={cliente.Id}");
+                    await Shell.Current.GoToAsync($"///clientedetail?clienteId={cliente.Id}");
                 }
                 else if (action == "Deletar")
                 {

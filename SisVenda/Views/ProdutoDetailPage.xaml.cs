@@ -9,6 +9,7 @@ namespace Sisvenda.Views
         private ProdutoDetailViewModel _viewModel;
         private int _productId = -1;
         private Produto _produto;
+        private bool _isLoaded = false;
 
         public int ProductId
         {
@@ -27,6 +28,11 @@ namespace Sisvenda.Views
         {
             base.OnAppearing();
 
+            if (_isLoaded)
+                return;
+
+            _isLoaded = true;
+
             // Se o BindingContext é um Produto (vem da edição)
             if (BindingContext is Produto produto && produto != null && produto.Id > 0)
             {
@@ -38,7 +44,7 @@ namespace Sisvenda.Views
             }
             else
             {
-                // Senão, inicializa como novo
+                // Senão, inicializa como novo ou carrega pelo ID
                 await _viewModel.InitializeAsync(_productId > 0 ? _productId : null);
             }
         }
