@@ -11,16 +11,18 @@ namespace Sisvenda.Views
         private List<Cliente> _clientes;
         private DatabaseService _databaseService;
         private decimal _desconto;
+        private Produto _produtoSelecionado;
 
         public ObservableCollection<ItemVenda> Itens { get; private set; }
 
         public Produto ProdutoSelecionado
         {
-            get => _venda?.Itens?.LastOrDefault()?.Produto;
+            get => _produtoSelecionado;
             set
             {
-                if (value != null)
+                if (_produtoSelecionado != value)
                 {
+                    _produtoSelecionado = value;
                     OnPropertyChanged();
                 }
             }
@@ -114,7 +116,6 @@ namespace Sisvenda.Views
             if (ProdutoPicker.SelectedItem is Produto produto)
             {
                 ProdutoSelecionado = produto;
-                OnPropertyChanged(nameof(ProdutoSelecionado));
             }
         }
 
@@ -172,7 +173,6 @@ namespace Sisvenda.Views
             QuantidadeEntry.Text = "1";
             ProdutoPicker.SelectedItem = null;
             ProdutoSelecionado = null;
-            OnPropertyChanged(nameof(ProdutoSelecionado));
         }
 
         private async void OnRemoverItemClicked(object sender, EventArgs e)
