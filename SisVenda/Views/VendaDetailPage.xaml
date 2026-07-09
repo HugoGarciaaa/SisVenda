@@ -75,12 +75,14 @@
                 <Frame Padding="15" CornerRadius="8" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="White">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Detalhes do Produto" FontSize="14" FontAttributes="Bold" TextColor="#333"/>
-                        <Grid RowDefinitions="200,*" RowSpacing="10">
+                        <Grid RowDefinitions="180,*" RowSpacing="10">
                             <!-- Imagem do Produto -->
-                            <Frame Grid.Row="0" Padding="0" CornerRadius="6" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="#f0f0f0">
-                                <Image Source="{Binding ProdutoSelecionado.ImagemUrl, FallbackValue='https://via.placeholder.com/200x200?text=Sem+Imagem'}" 
-                                      Aspect="AspectFill"
-                                      BackgroundColor="#f0f0f0"/>
+                            <Frame Grid.Row="0" Padding="5" CornerRadius="6" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="#f0f0f0" WidthRequest="250" HeightRequest="180" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Image Source="{Binding ProdutoSelecionado.ImagemUrl, FallbackValue='https://via.placeholder.com/250x180?text=Sem+Imagem'}" 
+                                      Aspect="AspectFit"
+                                      BackgroundColor="#f0f0f0"
+                                      WidthRequest="240"
+                                      HeightRequest="170"/>
                             </Frame>
 
                             <!-- Detalhes -->
@@ -138,10 +140,12 @@
                                     <Frame Padding="10" CornerRadius="6" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="#f9f9f9">
                                         <Grid RowDefinitions="80,auto,auto,auto,auto,auto,auto" RowSpacing="5">
                                             <!-- Imagem do Item -->
-                                            <Frame Grid.Row="0" Padding="0" CornerRadius="4" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="#f0f0f0">
-                                                <Image Source="{Binding Produto.ImagemUrl, FallbackValue='https://via.placeholder.com/100'}" 
-                                                      Aspect="AspectFill"
-                                                      BackgroundColor="#f0f0f0"/>
+                                            <Frame Grid.Row="0" Padding="5" CornerRadius="4" BorderColor="#e0e0e0" HasShadow="False" BackgroundColor="#f0f0f0" WidthRequest="100" HeightRequest="80" HorizontalOptions="Center" VerticalOptions="Center">
+                                                <Image Source="{Binding Produto.ImagemUrl, FallbackValue='https://via.placeholder.com/100x80'}" 
+                                                      Aspect="AspectFit"
+                                                      BackgroundColor="#f0f0f0"
+                                                      WidthRequest="90"
+                                                      HeightRequest="70"/>
                                             </Frame>
 
                                             <!-- Nome e Codigo -->
