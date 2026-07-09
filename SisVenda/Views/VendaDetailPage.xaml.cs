@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace Sisvenda.Views
 {
+    [QueryProperty(nameof(VendaId), "id")]
     public partial class VendaDetailPage : ContentPage
     {
         private Venda _venda;
@@ -12,6 +13,13 @@ namespace Sisvenda.Views
         private DatabaseService _databaseService;
         private decimal _desconto;
         private Produto _produtoSelecionado;
+        private int _vendaId = -1;
+
+        public int VendaId
+        {
+            get => _vendaId;
+            set => _vendaId = value;
+        }
 
         public ObservableCollection<ItemVenda> Itens { get; private set; }
 

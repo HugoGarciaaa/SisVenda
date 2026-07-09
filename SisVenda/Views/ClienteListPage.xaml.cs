@@ -22,7 +22,7 @@ namespace Sisvenda.Views
 
         private async void OnAddClienteClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("///clienteDetail");
+            await Shell.Current.GoToAsync("clientedetail");
         }
 
         // NOTE: Other GoToAsync calls may also need absolute routes ("///") if they target Shell elements.
@@ -32,7 +32,7 @@ namespace Sisvenda.Views
         {
             if (sender is Button btn && btn.CommandParameter is Cliente cliente)
             {
-                await Shell.Current.GoToAsync($"///clienteDetail?clienteId={cliente.Id}");
+                await Shell.Current.GoToAsync($"clientedetail?clienteId={cliente.Id}");
             }
         }
 
@@ -41,6 +41,27 @@ namespace Sisvenda.Views
             if (sender is Button btn && btn.CommandParameter is Cliente cliente)
             {
                 await _viewModel.DeleteClienteAsync(cliente);
+            }
+        }
+
+        private async void OnOptionClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is Cliente cliente)
+            {
+                var action = await DisplayActionSheet("Opcoes", "Cancelar", null, "Editar", "Deletar");
+
+                if (action == "Editar")
+                {
+                    await Shell.Current.GoToAsync($"clientedetail?clienteId={cliente.Id}");
+                }
+                else if (action == "Deletar")
+                {
+                    var confirm = await DisplayAlert("Confirmacao", "Deseja deletar este cliente?", "Sim", "Nao");
+                    if (confirm)
+                    {
+                        await _viewModel.DeleteClienteAsync(cliente);
+                    }
+                }
             }
         }
 

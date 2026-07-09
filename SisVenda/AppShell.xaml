@@ -46,7 +46,7 @@
             Route="vendas"/>
     </FlyoutItem>
 
-    <ShellContent Route="produtoDetail" ContentTemplate="{DataTemplate views:ProdutoDetailPage}"/>
-    <ShellContent Route="clienteDetail" ContentTemplate="{DataTemplate views:ClienteDetailPage}"/>
-    <ShellContent Route="vendaDetail" ContentTemplate="{DataTemplate views:VendaDetailPage}"/>
+    <ShellContent Route="produtodetail" ContentTemplate="{DataTemplate views:ProdutoDetailPage}"/>
+    <ShellContent Route="clientedetail" ContentTemplate="{DataTemplate views:ClienteDetailPage}"/>
+    <ShellContent Route="vendadetail" ContentTemplate="{DataTemplate views:VendaDetailPage}"/>
 </Shell>

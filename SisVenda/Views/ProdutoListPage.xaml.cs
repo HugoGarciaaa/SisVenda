@@ -97,7 +97,7 @@ namespace Sisvenda.Views
 
                 if (action == "Editar")
                 {
-                    await Shell.Current.GoToAsync($"produtodetail?produtoId={produto.Id}");
+                    await Shell.Current.GoToAsync($"produtodetail?id={produto.Id}");
                 }
                 else if (action == "Deletar")
                 {

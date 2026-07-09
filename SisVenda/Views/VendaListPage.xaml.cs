@@ -88,5 +88,26 @@ namespace Sisvenda.Views
                 _viewModel.Vendas.Add(venda);
             }
         }
+
+        private async void OnOptionClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is Venda venda)
+            {
+                var action = await DisplayActionSheet("Opcoes", "Cancelar", null, "Ver", "Deletar");
+
+                if (action == "Ver")
+                {
+                    await Shell.Current.GoToAsync($"vendadetail?id={venda.Id}");
+                }
+                else if (action == "Deletar")
+                {
+                    var confirm = await DisplayAlert("Confirmacao", "Deseja deletar esta venda?", "Sim", "Nao");
+                    if (confirm)
+                    {
+                        await _viewModel.DeleteVendaAsync(venda);
+                    }
+                }
+            }
+        }
     }
 }
